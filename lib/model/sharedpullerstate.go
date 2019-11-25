@@ -105,12 +105,10 @@ func (s *sharedPullerState) tempFile() (io.WriterAt, error) {
 	if s.writer != nil {
 		return s.writer, nil
 	}
-
 	if err := inWritableDir(s.tempFileInWritableDir, s.fs, s.tempName, s.ignorePerms); err != nil {
 		s.failLocked(err)
 		return nil, err
 	}
-
 	return s.writer, nil
 }
 
@@ -146,6 +144,9 @@ func (s *sharedPullerState) tempFileInWritableDir(_ string) error {
 
 		if err := s.fs.Chmod(s.tempName, mode); err != nil {
 			return errors.Wrap(err, "setting perms on temp file")
+		}
+		if err := s.fs.Lchown(s.tempName, int(s.file.Uid), int(s.file.Gid)); err != nil {
+			return errors.Wrap(err, "setting owner on temp file")
 		}
 	}
 	fd, err := s.fs.OpenFile(s.tempName, flags, mode)

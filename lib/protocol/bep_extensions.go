@@ -213,6 +213,10 @@ func (f FileInfo) isEquivalent(other FileInfo, modTimeWindow time.Duration, igno
 		return false
 	}
 
+	if !ignorePerms && !f.SameOwner(&other) {
+		return false
+	}
+
 	switch f.Type {
 	case FileInfoTypeFile:
 		return f.Size == other.Size && ModTimeEqual(f.ModTime(), other.ModTime(), modTimeWindow) && (ignoreBlocks || BlocksEqual(f.Blocks, other.Blocks))
@@ -246,6 +250,10 @@ func PermsEqual(a, b uint32) bool {
 		// All bits count
 		return a&0777 == b&0777
 	}
+}
+
+func (f *FileInfo) SameOwner(other *FileInfo) bool {
+	return f.Uid == other.Uid && f.Gid == other.Gid
 }
 
 // BlocksEqual returns whether two slices of blocks are exactly the same hash

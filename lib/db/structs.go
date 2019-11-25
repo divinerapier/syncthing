@@ -137,6 +137,9 @@ func (f FileInfoTruncated) ConvertToIgnoredFileInfo(by protocol.ShortID) protoco
 		Version:      f.Version,
 		RawBlockSize: f.RawBlockSize,
 		LocalFlags:   protocol.FlagLocalIgnored,
+		Uid:          f.Uid,
+		Gid:          f.Gid,
+		Permissions:  f.Permissions,
 	}
 }
 

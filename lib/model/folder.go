@@ -182,7 +182,7 @@ func (f *folder) serve(ctx context.Context) {
 			f.scanTimer.Reset(next)
 
 		case fsEvents := <-f.watchChan:
-			l.Debugln(f, "Scan due to watcher")
+			l.Debugln(f, "Scan due to watcher", fsEvents)
 			f.scanSubdirs(fsEvents)
 
 		case <-f.restartWatchChan:
@@ -495,15 +495,18 @@ func (f *folder) scanSubdirs(subDirs []string) error {
 					return true
 				}
 				nf := protocol.FileInfo{
-					Name:       file.Name,
-					Type:       file.Type,
-					Size:       0,
-					ModifiedS:  file.ModifiedS,
-					ModifiedNs: file.ModifiedNs,
-					ModifiedBy: f.shortID,
-					Deleted:    true,
-					Version:    file.Version.Update(f.shortID),
-					LocalFlags: f.localFlags,
+					Name:        file.Name,
+					Type:        file.Type,
+					Size:        0,
+					ModifiedS:   file.ModifiedS,
+					ModifiedNs:  file.ModifiedNs,
+					ModifiedBy:  f.shortID,
+					Deleted:     true,
+					Version:     file.Version.Update(f.shortID),
+					LocalFlags:  f.localFlags,
+					Uid:         file.Uid,
+					Gid:         file.Gid,
+					Permissions: file.Permissions,
 				}
 				// We do not want to override the global version
 				// with the deleted file. Setting to an empty
